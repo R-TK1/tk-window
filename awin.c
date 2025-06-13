@@ -34,4 +34,15 @@ void awin_destroyWindow(void)
 #endif
 }
 
-bool awin_pollWindow(void) { return window.shouldClose; }
+bool awin_pollWindow(void)
+{
+#ifdef WAYLAND
+    window.shouldClose = awin_waylandPollWindow();
+#elifdef X11
+    // TODO: X11 code
+#endif
+
+    return window.shouldClose;
+}
+
+void awin_closeWindow(void) { window.shouldClose = true; }
