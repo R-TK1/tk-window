@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 4.0.0 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
 project("awin" LANGUAGES C VERSION 0.0.0.2)
 
 include(CMakeDependentOption)
