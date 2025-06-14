@@ -3,7 +3,6 @@
 ## version 3.10 or higher. The following options effect this file's output:
 ##
 ## TKWIN_UNDERLYING<ON> - Toggle Wayland (ON) or X11 (OFF) mode.
-## TKWIN_EXAMPLES<ON>   - Toggle building the example executables.
 ##
 ## Copyright (c) 2025 - RPGTK Team
 ## This source code is under the GPLv3. For information on what that entails,
@@ -11,7 +10,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("tkwindow" LANGUAGES C VERSION 0.0.0.4)
+project("tkwindow" LANGUAGES C VERSION 0.0.0.5)
 
 # We only support Linux. Everything else can go kick rocks.
 if(NOT UNIX OR APPLE)
@@ -19,7 +18,6 @@ if(NOT UNIX OR APPLE)
 endif()
 
 option(TKWIN_UNDERLYING "Toggle Wayland (ON) or X11 (OFF) mode." ON)
-option(TKWIN_EXAMPLES "Build the example executables." ON)
 
 # https://en.wikipedia.org/wiki/C23_(C_standard_revision)
 set(CMAKE_C_STANDARD 23)
@@ -78,13 +76,4 @@ if(${TKWIN_UNDERLYING})
 else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE X11)
     # TODO: X11.
-endif()
-
-if(${TKWIN_EXAMPLES})
-    file(GLOB TEST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/*")
-    foreach(file ${TEST_FILES})
-        cmake_path(GET file STEM FILE_NAME)
-        add_executable(${FILE_NAME} ${file})
-        target_link_libraries(${FILE_NAME} ${PROJECT_NAME})
-    endforeach()
 endif()
