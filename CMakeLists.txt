@@ -5,7 +5,7 @@
 ## TKWIN_UNDERLYING<ON> - Toggle Wayland (ON) or X11 (OFF) mode.
 ## TKWIN_EXAMPLES<ON>   - Toggle building the example executables.
 ##
-## Copyright (c) 2025 - RPGTK1 Team
+## Copyright (c) 2025 - RPGTK Team
 ## This source code is under the GPLv3. For information on what that entails,
 ## please see <https://www.gnu.org/licenses/gpl-3.0.txt>.
 ################################################################################
