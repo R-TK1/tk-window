@@ -4,7 +4,6 @@ on:
     branches: [ "*" ]
     paths-ignore:
         - "**/**.md"
-        - "CMakePresets.json"
         - ".*"
   pull_request:
     branches: [ "*" ]
