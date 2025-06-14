@@ -32,7 +32,7 @@ static void handleTopClose(void *data, struct xdg_toplevel *toplevel)
 {
     (void)data;
     (void)toplevel;
-    awin_closeWindow();
+    tkwin_closeWindow();
 }
 
 static void handleTopConfigure(void *data, struct xdg_toplevel *toplevel,
@@ -187,7 +187,7 @@ static void handleGlobalRemove(void *data, struct wl_registry *registry,
 static const struct wl_registry_listener pRegistryListener = {
     .global = handleGlobal, .global_remove = handleGlobalRemove};
 
-awin_error_t awin_waylandCreateWindow(void)
+tkwin_error_t tkwin_waylandCreateWindow(void)
 {
     // TODO: Implment user-controlled Wayland server via command line
     // TODO: arguments given to the executable.
@@ -195,7 +195,7 @@ awin_error_t awin_waylandCreateWindow(void)
     if (pDisplay == nullptr)
     {
         perror("Failed to connect to Wayland display server. Code: ");
-        return AWIN_FAILED_WAYLAND_CONNECT;
+        return TKWIN_FAILED_WAYLAND_CONNECT;
     }
 
     // This call ostensibly cannot fail if display is properly gotten.
@@ -218,12 +218,12 @@ awin_error_t awin_waylandCreateWindow(void)
     wl_display_roundtrip(pDisplay);
     wl_surface_commit(pSurface);
 
-    return AWIN_NO_ERROR;
+    return TKWIN_NO_ERROR;
 }
 
-void awin_waylandDestroyWindow(void) {}
+void tkwin_waylandDestroyWindow(void) {}
 
-bool awin_waylandPollWindow(void)
+bool tkwin_waylandPollWindow(void)
 {
     return wl_display_dispatch(pDisplay) != -1;
 }

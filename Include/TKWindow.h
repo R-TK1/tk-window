@@ -5,16 +5,16 @@
 
 typedef enum
 {
-    AWIN_NO_ERROR,
-    AWIN_FAILED_WAYLAND_CONNECT
-} awin_error_t;
+    TKWIN_NO_ERROR,
+    TKWIN_FAILED_WAYLAND_CONNECT
+} tkwin_error_t;
 
-awin_error_t awin_createWindow(void);
+tkwin_error_t tkwin_createWindow(void);
 
-void awin_destroyWindow(void);
+void tkwin_destroyWindow(void);
 
-bool awin_pollWindow(void);
+bool tkwin_pollWindow(void);
 
-void awin_closeWindow(void);
+void tkwin_closeWindow(void);
 
 #endif // TKWIN_MAIN_H
