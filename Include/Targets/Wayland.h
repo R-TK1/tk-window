@@ -1,7 +1,7 @@
 #ifndef AWIN_WAYLAND_H
 #define AWIN_WAYLAND_H
 
-#include <TKWin.h>
+#include <TKWindow.h>
 
 awin_error_t awin_waylandCreateWindow(void);
 void awin_waylandDestroyWindow(void);

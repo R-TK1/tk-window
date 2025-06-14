@@ -1,4 +1,4 @@
-#include <TKWin.h>
+#include <TKWindow.h>
 #include <stdio.h>
 
 int main(int argc, char **argv)

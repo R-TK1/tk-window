@@ -1,4 +1,4 @@
-#include <TKWin.h>
+#include <TKWindow.h>
 
 #ifdef WAYLAND
 #include <Targets/Wayland.h>

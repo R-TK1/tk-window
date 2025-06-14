@@ -11,7 +11,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("tkwindow" LANGUAGES C VERSION 0.0.0.3)
+project("tkwindow" LANGUAGES C VERSION 0.0.0.4)
 
 # We only support Linux. Everything else can go kick rocks.
 if(NOT UNIX OR APPLE)
@@ -26,7 +26,7 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(TKWIN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Source")
-set(TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/TKWin.c")
+set(TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/TKWindow.c")
 if(${TKWIN_UNDERLYING})
     list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/Wayland.c")
 else()
