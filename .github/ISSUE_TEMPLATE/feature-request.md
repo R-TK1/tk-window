@@ -1,6 +1,6 @@
 ---
 name: Feature Request
-about: Suggest an idea for the game.
+about: Suggest an idea for the project.
 title: ''
 labels: Feature
 assignees: israfiel-a
