@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Create a report to help the game improve.
+about: Create a report to help the project improve.
 title: ''
 labels: Fix
 assignees: israfiel-a
