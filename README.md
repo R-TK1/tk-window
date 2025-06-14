@@ -3,9 +3,9 @@
 ---
 
 ### TKWindow
-![workflow_badge](https://img.shields.io/github/actions/workflow/status/R-TK1/tk-window/build.yml?label=Build%20Test)
+![workflow_badge](https://img.shields.io/github/actions/workflow/status/RPGtk/tk-window/build.yml?label=Build%20Test)
 ![loc_badge](https://github.com/R-TK1/tk-window/blob/badges/loc.svg)
-![latest_release_badge](https://img.shields.io/github/v/release/R-TK1/tk-window?label=Experimental&include_preleases=true)
+![latest_release_badge](https://img.shields.io/github/v/release/RPGtk/tk-window?label=Experimental&include_preleases=true)
 
 A very tiny, very specialized windowing wrapper over Wayland and X11 written in [C23](https://en.wikipedia.org/wiki/C23_(C_standard_revision)). It's built to be performant and simple, supporting as many Linux [windowing backends](https://en.wikipedia.org/wiki/Windowing_system) as possible. **MacOS is not currently supported, but planned. Windows is not planned.**
 
