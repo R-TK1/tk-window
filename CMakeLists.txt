@@ -1,43 +1,70 @@
+################################################################################
+## The configuration files for the tk-window project. This requires CMake 
+## version 3.10 or higher. The following options effect this file's output:
+##
+## TKWIN_UNDERLYING<ON> - Toggle Wayland (ON) or X11 (OFF) mode.
+## TKWIN_EXAMPLES<ON>   - Toggle building the example executables.
+##
+## Copyright (c) 2025 - RPGTK1 Team
+## This source code is under the GPLv3. For information on what that entails,
+## please see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+################################################################################
+
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("awin" LANGUAGES C VERSION 0.0.0.2)
+project("tkwindow" LANGUAGES C VERSION 0.0.0.3)
 
-include(CMakeDependentOption)
+# We only support Linux. Everything else can go kick rocks.
+if(NOT UNIX OR APPLE)
+    message(FATAL_ERROR "This operating system is not supported by tk-window.")
+endif()
 
-cmake_dependent_option(AWIN_LINUX_WINDOWING "Toggle Wayland (ON) or X11 (OFF) mode." ON "UNIX;NOT APPLE" FORCE)
+option(TKWIN_UNDERLYING "Toggle Wayland (ON) or X11 (OFF) mode." ON)
+option(TKWIN_EXAMPLES "Build the example executables." ON)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules")
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/Tests")
-
+# https://en.wikipedia.org/wiki/C23_(C_standard_revision)
 set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
-add_compile_options(-Wall -Werror -Wpedantic -Wextra)
+set(TKWIN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Source")
+set(TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/TKWin.c")
+if(${TKWIN_UNDERLYING})
+    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/Wayland.c")
+else()
+    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/X11.c")
+endif()
+
+add_library(${PROJECT_NAME} STATIC ${TKWIN_SOURCES})
+
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules")
+target_include_directories(${PROJECT_NAME} PUBLIC 
+    "${CMAKE_CURRENT_SOURCE_DIR}/Include")
+
+target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Werror -Wpedantic -Wextra)
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    # https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
     set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-    add_compile_options(-Og -g3 -ggdb -fsanitize=address -fsanitize=pointer-compare 
-        -fsanitize=leak -fsanitize=pointer-subtract -fsanitize=undefined)
-    add_link_options(-fsanitize=address -fsanitize=undefined)
+    target_compile_options(${PROJECT_NAME} PUBLIC -Og -g3 -ggdb -fsanitize=address 
+        -fsanitize=pointer-compare  -fsanitize=leak -fsanitize=pointer-subtract 
+        -fsanitize=undefined)
+    target_link_options(${PROJECT_NAME} PUBLIC -fsanitize=address 
+        -fsanitize=undefined)
+
     if(CMAKE_C_COMPILER_ID STREQUAL "GNU")
-        add_compile_options(-fanalyzer)
+        # https://gcc.gnu.org/onlinedocs/gcc/Static-Analyzer-Options.html
+        target_compile_options(${PROJECT_NAME} PUBLIC -fanalyzer)
     endif()
 else()
-    add_compile_options(-march=native -mtune=native -Ofast -flto)
-    add_link_options(-Ofast -flto)
+    # https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html#index-march-15
+    # https://gcc.gnu.org/onlinedocs/gcc/x86-Options.html#index-mtune-17
+    target_compile_options(${PROJECT_NAME} PUBLIC -march=native -mtune=native 
+        -Ofast -flto)
+    target_link_options(${PROJECT_NAME} PUBLIC -Ofast -flto)
 endif()
 
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}" "${CMAKE_CURRENT_SOURCE_DIR}/Target")
-set(AWIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.c" "${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.h")
-if(${AWIN_LINUX_WINDOWING})
-    list(APPEND AWIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Target/wayland.c" "${CMAKE_CURRENT_SOURCE_DIR}/Target/wayland.h")
-else()
-    list(APPEND AWIN_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/Target/x11.c" "${CMAKE_CURRENT_SOURCE_DIR}/Target/x11.h")
-    target_compile_definitions(${PROJECT_NAME} PRIVATE X11=false)
-endif()
-
-add_library(${PROJECT_NAME} STATIC ${AWIN_SOURCES})
-if(${AWIN_LINUX_WINDOWING})
+if(${TKWIN_UNDERLYING})
     target_compile_definitions(${PROJECT_NAME} PRIVATE WAYLAND)
+
     find_package(Wayland REQUIRED)
     target_link_libraries(${PROJECT_NAME} ${Wayland_LIBRARIES})
     target_include_directories(${PROJECT_NAME} PUBLIC ${Wayland_INCLUDE_DIRS})
@@ -46,16 +73,18 @@ if(${AWIN_LINUX_WINDOWING})
     ecm_add_wayland_client_protocol(${PROJECT_NAME} PROTOCOL 
         "${CMAKE_CURRENT_SOURCE_DIR}/Modules/Protocols/xdg-shell.xml" BASENAME 
         xdg-shell PRIVATE_CODE)
-    # The above function adds the header into the build directory. We need to
-    # make sure we can wrangle said header.
-    target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_BINARY_DIR}")
+    target_include_directories(${PROJECT_NAME} PUBLIC 
+        "${CMAKE_CURRENT_BINARY_DIR}")
 else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE X11)
+    # TODO: X11.
 endif()
 
-file(GLOB TEST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/Tests/*")
-foreach(file ${TEST_FILES})
-    cmake_path(GET file STEM FILE_NAME)
-    add_executable(${FILE_NAME} ${file})
-    target_link_libraries(${FILE_NAME} ${PROJECT_NAME})
-endforeach()
+if(${TKWIN_EXAMPLES})
+    file(GLOB TEST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/*")
+    foreach(file ${TEST_FILES})
+        cmake_path(GET file STEM FILE_NAME)
+        add_executable(${FILE_NAME} ${file})
+        target_link_libraries(${FILE_NAME} ${PROJECT_NAME})
+    endforeach()
+endif()

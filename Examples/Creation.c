@@ -1,4 +1,4 @@
-#include <awin.h>
+#include <TKWin.h>
 #include <stdio.h>
 
 int main(int argc, char **argv)

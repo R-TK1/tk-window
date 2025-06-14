@@ -1,9 +1,9 @@
-#include "awin.h"
+#include <TKWin.h>
 
 #ifdef WAYLAND
-#include <wayland.h>
+#include <Targets/Wayland.h>
 #elifdef X11
-#include <x11.h>
+#include <Targets/X11.h>
 #endif
 
 struct

@@ -1,4 +1,4 @@
-#include "wayland.h"
+#include <Targets/Wayland.h>
 #include <stdio.h>
 #include <string.h>
 #include <wayland-client.h>
