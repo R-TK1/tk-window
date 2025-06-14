@@ -10,8 +10,7 @@ on:
             - '.github/**'
             - 'LICENSE.md'
             - 'README.md'
-            - 'CREDITS.md'
-            - 'CONTRIBUTING.md'
+            - 'CODE_OF_CONDUCT.md'
             - '.**'
 permissions:
     contents: write
