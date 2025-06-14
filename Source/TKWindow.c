@@ -12,12 +12,12 @@ struct
     bool shouldClose;
 } window = {nullptr, true};
 
-tkwin_error_t tkwin_createWindow(void)
+tkwin_error_t tkwin_create(void)
 {
     tkwin_error_t error = TKWIN_NO_ERROR;
 
 #ifdef WAYLAND
-    error = tkwin_waylandCreateWindow();
+    error = tkwin_waylandCreate();
 #elifdef X11
     // TODO: X11 code
 #endif
@@ -25,19 +25,19 @@ tkwin_error_t tkwin_createWindow(void)
     return error;
 }
 
-void tkwin_destroyWindow(void)
+void tkwin_destroy(void)
 {
 #ifdef WAYLAND
-    tkwin_waylandDestroyWindow();
+    tkwin_waylandDestroy();
 #elifdef X11
     // TODO: X11 code
 #endif
 }
 
-bool tkwin_pollWindow(void)
+bool tkwin_poll(void)
 {
 #ifdef WAYLAND
-    window.shouldClose = tkwin_waylandPollWindow();
+    window.shouldClose = tkwin_waylandPoll();
 #elifdef X11
     // TODO: X11 code
 #endif
@@ -45,4 +45,4 @@ bool tkwin_pollWindow(void)
     return window.shouldClose;
 }
 
-void tkwin_closeWindow(void) { window.shouldClose = true; }
+void tkwin_close(void) { window.shouldClose = true; }

@@ -32,7 +32,7 @@ static void handleTopClose(void *data, struct xdg_toplevel *toplevel)
 {
     (void)data;
     (void)toplevel;
-    tkwin_closeWindow();
+    tkwin_close();
 }
 
 static void handleTopConfigure(void *data, struct xdg_toplevel *toplevel,
@@ -48,8 +48,7 @@ static void handleTopConfigure(void *data, struct xdg_toplevel *toplevel,
     printf("Window dimensions adjusted: %dx%d.\n", width, height);
 }
 
-static void handleTopConfigureBounds(void *data,
-                                     struct xdg_toplevel *toplevel,
+static void handleTopConfigureBounds(void *data, struct xdg_toplevel *toplevel,
                                      int32_t width, int32_t height)
 {
     (void)data;
@@ -72,10 +71,10 @@ static const struct xdg_toplevel_listener pToplevelListener = {
     .configure_bounds = handleTopConfigureBounds,
     .wm_capabilities = handleCapabilities};
 
-void handleGeometry(void *data, struct wl_output *output, int32_t x,
-                    int32_t y, int32_t physical_width,
-                    int32_t physical_height, int32_t subpixel,
-                    const char *make, const char *model, int32_t transform)
+void handleGeometry(void *data, struct wl_output *output, int32_t x, int32_t y,
+                    int32_t physical_width, int32_t physical_height,
+                    int32_t subpixel, const char *make, const char *model,
+                    int32_t transform)
 {
     (void)data;
     (void)output;
@@ -137,8 +136,7 @@ static const struct wl_output_listener outputListener = {
     .name = handleName,
     .scale = handleScale};
 
-static void handlePing(void *data, struct xdg_wm_base *shell,
-                       uint32_t serial)
+static void handlePing(void *data, struct xdg_wm_base *shell, uint32_t serial)
 {
     (void)data;
     xdg_wm_base_pong(shell, serial);
@@ -147,8 +145,7 @@ static void handlePing(void *data, struct xdg_wm_base *shell,
 static struct xdg_wm_base_listener pShellListener = {.ping = handlePing};
 
 static void handleGlobal(void *data, struct wl_registry *registry,
-                         uint32_t name, const char *interface,
-                         uint32_t version)
+                         uint32_t name, const char *interface, uint32_t version)
 {
     (void)data;
     (void)version;
@@ -162,16 +159,13 @@ static void handleGlobal(void *data, struct wl_registry *registry,
     }
     else if (strcmp(interface, xdg_wm_base_interface.name) == 0)
     {
-        pShell =
-            wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
+        pShell = wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
         xdg_wm_base_add_listener(pShell, &pShellListener, NULL);
     }
     else if (strcmp(interface, wl_output_interface.name) == 0)
     {
-        pOutput =
-            wl_registry_bind(registry, name, &wl_output_interface, 2);
-        if (pOutput == nullptr)
-            perror("Failed to connect to output. Code: ");
+        pOutput = wl_registry_bind(registry, name, &wl_output_interface, 2);
+        if (pOutput == nullptr) perror("Failed to connect to output. Code: ");
         wl_output_add_listener(pOutput, &outputListener, nullptr);
     }
 }
@@ -187,7 +181,7 @@ static void handleGlobalRemove(void *data, struct wl_registry *registry,
 static const struct wl_registry_listener pRegistryListener = {
     .global = handleGlobal, .global_remove = handleGlobalRemove};
 
-tkwin_error_t tkwin_waylandCreateWindow(void)
+tkwin_error_t tkwin_waylandCreate(void)
 {
     // TODO: Implment user-controlled Wayland server via command line
     // TODO: arguments given to the executable.
@@ -221,9 +215,6 @@ tkwin_error_t tkwin_waylandCreateWindow(void)
     return TKWIN_NO_ERROR;
 }
 
-void tkwin_waylandDestroyWindow(void) {}
+void tkwin_waylandDestroy(void) {}
 
-bool tkwin_waylandPollWindow(void)
-{
-    return wl_display_dispatch(pDisplay) != -1;
-}
+bool tkwin_waylandPoll(void) { return wl_display_dispatch(pDisplay) != -1; }

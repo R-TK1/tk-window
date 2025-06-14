@@ -10,7 +10,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("tkwindow" LANGUAGES C VERSION 0.0.0.7)
+project("tkwindow" LANGUAGES C VERSION 0.0.0.8)
 
 # We only support Linux. Everything else can go kick rocks.
 if(NOT UNIX OR APPLE)

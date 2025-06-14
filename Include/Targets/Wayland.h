@@ -3,8 +3,8 @@
 
 #include <TKWindow.h>
 
-tkwin_error_t tkwin_waylandCreateWindow(void);
-void tkwin_waylandDestroyWindow(void);
-bool tkwin_waylandPollWindow(void);
+tkwin_error_t tkwin_waylandCreate(void);
+void tkwin_waylandDestroy(void);
+bool tkwin_waylandPoll(void);
 
 #endif // TKWIN_WAYLAND_H

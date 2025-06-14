@@ -9,12 +9,12 @@ typedef enum
     TKWIN_FAILED_WAYLAND_CONNECT
 } tkwin_error_t;
 
-tkwin_error_t tkwin_createWindow(void);
+tkwin_error_t tkwin_create(void);
 
-void tkwin_destroyWindow(void);
+void tkwin_destroy(void);
 
-bool tkwin_pollWindow(void);
+bool tkwin_poll(void);
 
-void tkwin_closeWindow(void);
+void tkwin_close(void);
 
 #endif // TKWIN_MAIN_H
