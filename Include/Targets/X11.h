@@ -1,4 +1,4 @@
-#ifndef AWIN_X11_H
-#define AWIN_X11_H
+#ifndef TKWIN_X11_H
+#define TKWIN_X11_H
 
-#endif // AWIN_X11_H
+#endif // TKWIN_X11_H

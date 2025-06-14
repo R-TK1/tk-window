@@ -1,5 +1,5 @@
-#ifndef AWIN_MAIN_H
-#define AWIN_MAIN_H
+#ifndef TKWIN_MAIN_H
+#define TKWIN_MAIN_H
 
 #include <stdint.h>
 
@@ -17,4 +17,4 @@ bool awin_pollWindow(void);
 
 void awin_closeWindow(void);
 
-#endif // AWIN_MAIN_H
+#endif // TKWIN_MAIN_H
