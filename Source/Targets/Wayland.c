@@ -224,3 +224,9 @@ void tkwin_waylandGetFramebufferSize(uint32_t *width, uint32_t *height)
     *width = pWidth * pScaleFactor;
     *height = pHeight * pScaleFactor;
 }
+
+void tkwin_waylandGetSurfaceData(void **data)
+{
+    data[0] = pDisplay;
+    data[1] = pSurface;
+}

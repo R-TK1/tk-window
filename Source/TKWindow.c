@@ -55,3 +55,12 @@ void tkwin_getFramebufferSize(uint32_t *width, uint32_t *height)
     // TODO: X11 code
 #endif
 }
+
+void tkwin_getSurfaceData(void **data)
+{
+#ifdef WAYLAND
+    tkwin_waylandGetSurfaceData(data);
+#elifdef X11
+    // TODO: X11 code
+#endif
+}

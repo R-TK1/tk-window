@@ -19,4 +19,6 @@ void tkwin_close(void);
 
 void tkwin_getFramebufferSize(uint32_t *width, uint32_t *height);
 
+void tkwin_getSurfaceData(void **data);
+
 #endif // TKWIN_MAIN_H
