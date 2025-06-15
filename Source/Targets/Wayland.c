@@ -218,3 +218,9 @@ tkwin_error_t tkwin_waylandCreate(void)
 void tkwin_waylandDestroy(void) {}
 
 bool tkwin_waylandPoll(void) { return wl_display_dispatch(pDisplay) != -1; }
+
+void tkwin_waylandGetFramebufferSize(uint32_t *width, uint32_t *height)
+{
+    *width = pWidth * pScaleFactor;
+    *height = pHeight * pScaleFactor;
+}

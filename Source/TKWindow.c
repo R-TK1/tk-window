@@ -46,3 +46,12 @@ bool tkwin_poll(void)
 }
 
 void tkwin_close(void) { window.shouldClose = true; }
+
+void tkwin_getFramebufferSize(uint32_t *width, uint32_t *height)
+{
+#ifdef WAYLAND
+    tkwin_waylandGetFramebufferSize(width, height);
+#elifdef X11
+    // TODO: X11 code
+#endif
+}

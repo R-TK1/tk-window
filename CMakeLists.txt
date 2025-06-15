@@ -10,7 +10,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("tkwindow" LANGUAGES C VERSION 0.0.0.8)
+project("tkwindow" LANGUAGES C VERSION 0.0.0.9)
 
 # We only support Linux. Everything else can go kick rocks.
 if(NOT UNIX OR APPLE)
@@ -24,18 +24,18 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(TKWIN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Source")
-set(TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/TKWindow.c")
+set(TKWIN_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Include")
+set(TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/TKWindow.c" "${TKWIN_INCLUDE_DIR}/TKWindow.h")
 if(${TKWIN_UNDERLYING})
-    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/Wayland.c")
+    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/Wayland.c" "${TKWIN_INCLUDE_DIR}/Targets/Wayland.h")
 else()
-    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/X11.c")
+    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/X11.c" "${TKWIN_INCLUDE_DIR}/Targets/X11.h")
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${TKWIN_SOURCES})
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules")
-target_include_directories(${PROJECT_NAME} PUBLIC 
-    "${CMAKE_CURRENT_SOURCE_DIR}/Include")
+target_include_directories(${PROJECT_NAME} PUBLIC "${TKWIN_INCLUDE_DIR}")
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Werror -Wpedantic -Wextra)
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")

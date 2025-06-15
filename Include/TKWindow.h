@@ -17,4 +17,6 @@ bool tkwin_poll(void);
 
 void tkwin_close(void);
 
+void tkwin_getFramebufferSize(uint32_t *width, uint32_t *height);
+
 #endif // TKWIN_MAIN_H
