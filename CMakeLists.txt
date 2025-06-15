@@ -14,7 +14,7 @@ project("TKWindow" LANGUAGES C VERSION 0.0.0.11)
 
 include(Helpers)
 run_checks()
-create_target()
+create_target(OFF)
 
 if(${TK_UNDERLYING})
     target_compile_definitions(${PROJECT_NAME} PRIVATE WAYLAND)
