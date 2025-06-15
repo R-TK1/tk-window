@@ -24,18 +24,17 @@ set(CMAKE_C_STANDARD 23)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 
 set(TKWIN_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Source")
-set(TKWIN_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/Include")
-set(TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/TKWindow.c" "${TKWIN_INCLUDE_DIR}/TKWindow.h")
+set(TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/TKWindow.c")
 if(${TKWIN_UNDERLYING})
-    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/Wayland.c" "${TKWIN_INCLUDE_DIR}/Targets/Wayland.h")
+    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/Wayland.c")
 else()
-    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/X11.c" "${TKWIN_INCLUDE_DIR}/Targets/X11.h")
+    list(APPEND TKWIN_SOURCES "${TKWIN_SOURCE_DIR}/Targets/X11.c")
 endif()
 
 add_library(${PROJECT_NAME} STATIC ${TKWIN_SOURCES})
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/Modules")
-target_include_directories(${PROJECT_NAME} PUBLIC "${TKWIN_INCLUDE_DIR}")
+target_include_directories(${PROJECT_NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/Include")
 
 target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Werror -Wpedantic -Wextra)
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
@@ -77,3 +76,5 @@ else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE X11)
     # TODO: X11.
 endif()
+
+file(COPY_FILE "${CMAKE_CURRENT_SOURCE_DIR}/Include/TKWindow.h" "${CMAKE_CURRENT_BINARY_DIR}/TKWindow.h")
