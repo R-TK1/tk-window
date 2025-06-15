@@ -3,7 +3,6 @@
 ---
 
 ### TKWindow
-![workflow_badge](https://img.shields.io/github/actions/workflow/status/RPGtk/tk-window/build.yml?label=Build%20Test)
 ![loc_badge](https://github.com/RPGtk/tk-window/blob/badges/loc.svg)
 ![latest_release_badge](https://img.shields.io/github/v/release/RPGtk/tk-window?label=Experimental&include_preleases=true)
 
