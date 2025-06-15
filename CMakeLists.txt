@@ -10,7 +10,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("tkwindow" LANGUAGES C VERSION 0.0.0.9)
+project("tkwindow" LANGUAGES C VERSION 0.0.0.10)
 
 # We only support Linux. Everything else can go kick rocks.
 if(NOT UNIX OR APPLE)
@@ -40,7 +40,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC "${TKWIN_INCLUDE_DIR}")
 target_compile_options(${PROJECT_NAME} PUBLIC -Wall -Werror -Wpedantic -Wextra)
 if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
     # https://cmake.org/cmake/help/latest/variable/CMAKE_EXPORT_COMPILE_COMMANDS.html
-    set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+    set_target_properties(${PROJECT_NAME} PROPERTIES EXPORT_COMPILE_COMMANDS ON)
 
     target_compile_options(${PROJECT_NAME} PUBLIC -Og -g3 -ggdb -fsanitize=address 
         -fsanitize=pointer-compare  -fsanitize=leak -fsanitize=pointer-subtract 
