@@ -8,7 +8,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("TKWindow" LANGUAGES C VERSION 0.0.0.14)
+project("TKWindow" LANGUAGES C VERSION 0.0.0.15)
 
 include(Helpers)
 run_checks(ON)
@@ -20,13 +20,6 @@ if(${TK_UNDERLYING})
     find_package(Wayland REQUIRED)
     target_link_libraries(${PROJECT_NAME} ${Wayland_LIBRARIES})
     target_include_directories(${PROJECT_NAME} PRIVATE ${Wayland_INCLUDE_DIRS})
-
-    find_package(Scanner REQUIRED)
-    ecm_add_wayland_client_protocol(${PROJECT_NAME} PROTOCOL 
-        "${CMAKE_CURRENT_SOURCE_DIR}/Protocols/xdg-shell.xml" BASENAME 
-        xdg-shell PRIVATE_CODE)
-    target_include_directories(${PROJECT_NAME} PRIVATE 
-        "${CMAKE_CURRENT_BINARY_DIR}")
 else()
     target_compile_definitions(${PROJECT_NAME} PRIVATE X11)
     # TODO: X11.

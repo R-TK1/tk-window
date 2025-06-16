@@ -1,8 +1,8 @@
 #include <Targets/Wayland.h>
+#include <Targets/XDGShell.h>
 #include <stdio.h>
 #include <string.h>
 #include <wayland-client.h>
-#include <xdg-shell-protocol.h>
 
 static struct wl_display *pDisplay = nullptr;
 static struct wl_registry *pRegistry = nullptr;
