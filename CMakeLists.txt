@@ -1,8 +1,6 @@
 ################################################################################
 ## The configuration files for the TKWindow project. This requires CMake 
-## version 3.10 or higher. The following options effect this file's output:
-##
-## TK_UNDERLYING<ON> - Toggle Wayland (ON) or X11 (OFF) mode.
+## version 3.10 or higher.
 ##
 ## Copyright (c) 2025 - RPGtk Team
 ## This source code is under the GPLv3. For information on what that entails,
@@ -10,10 +8,10 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("TKWindow" LANGUAGES C VERSION 0.0.0.13)
+project("TKWindow" LANGUAGES C VERSION 0.0.0.14)
 
 include(Helpers)
-run_checks()
+run_checks(ON)
 create_target(OFF)
 
 if(${TK_UNDERLYING})
