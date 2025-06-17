@@ -8,19 +8,11 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("TKWindow" LANGUAGES C VERSION 0.0.0.15)
+project("TKWindow" LANGUAGES C VERSION 0.0.0.16)
 
 include(Helpers)
 run_checks(ON)
+
 create_target(OFF)
-
-if(${TK_UNDERLYING})
-    target_compile_definitions(${PROJECT_NAME} PRIVATE WAYLAND)
-
-    find_package(Wayland REQUIRED)
-    target_link_libraries(${PROJECT_NAME} ${Wayland_LIBRARIES})
-    target_include_directories(${PROJECT_NAME} PRIVATE ${Wayland_INCLUDE_DIRS})
-else()
-    target_compile_definitions(${PROJECT_NAME} PRIVATE X11)
-    # TODO: X11.
-endif()
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${TK_UNDERLYING_SYSTEM})
+link_external(${TK_UNDERLYING_SYSTEM})
