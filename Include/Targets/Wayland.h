@@ -1,9 +1,9 @@
 #ifndef TKWINDOW_WAYLAND_H
 #define TKWINDOW_WAYLAND_H
 
-#include <TKWindow.h>
+#include <stdint.h>
 
-tkwin_error_t tkwin_waylandCreate(void);
+bool tkwin_waylandCreate(void);
 void tkwin_waylandDestroy(void);
 bool tkwin_waylandPoll(void);
 

@@ -14,5 +14,5 @@ include(Helpers)
 run_checks(ON)
 
 create_target(OFF)
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${TK_UNDERLYING_SYSTEM})
+target_compile_definitions(${PROJECT_NAME} PRIVATE ${TK_UNDERLYING_SYSTEM_UC})
 link_external(${TK_UNDERLYING_SYSTEM})

@@ -12,17 +12,15 @@ struct
     bool shouldClose;
 } window = {nullptr, true};
 
-tkwin_error_t tkwin_create(void)
+bool tkwin_create(void)
 {
-    tkwin_error_t error = TKWIN_NO_ERROR;
-
 #ifdef WAYLAND
-    error = tkwin_waylandCreate();
+    if (!tkwin_waylandCreate()) return false;
 #elifdef X11
     // TODO: X11 code
 #endif
 
-    return error;
+    return true;
 }
 
 void tkwin_destroy(void)
@@ -52,6 +50,8 @@ void tkwin_getFramebufferSize(uint32_t *width, uint32_t *height)
 #ifdef WAYLAND
     tkwin_waylandGetFramebufferSize(width, height);
 #elifdef X11
+    (void)width;
+    (void)height;
     // TODO: X11 code
 #endif
 }
@@ -61,6 +61,7 @@ void tkwin_getSurfaceData(void **data)
 #ifdef WAYLAND
     tkwin_waylandGetSurfaceData(data);
 #elifdef X11
+    (void)data;
     // TODO: X11 code
 #endif
 }

@@ -1,3 +1,4 @@
+#include <TKWindow.h>
 #include <Targets/Wayland.h>
 #include <Targets/XDGShell.h>
 #include <stdio.h>
@@ -181,7 +182,7 @@ static void handleGlobalRemove(void *data, struct wl_registry *registry,
 static const struct wl_registry_listener pRegistryListener = {
     .global = handleGlobal, .global_remove = handleGlobalRemove};
 
-tkwin_error_t tkwin_waylandCreate(void)
+bool tkwin_waylandCreate(void)
 {
     // TODO: Implment user-controlled Wayland server via command line
     // TODO: arguments given to the executable.
@@ -189,7 +190,7 @@ tkwin_error_t tkwin_waylandCreate(void)
     if (pDisplay == nullptr)
     {
         perror("Failed to connect to Wayland display server. Code: ");
-        return TKWIN_FAILED_WAYLAND_CONNECT;
+        return false;
     }
 
     // This call ostensibly cannot fail if display is properly gotten.
@@ -212,7 +213,7 @@ tkwin_error_t tkwin_waylandCreate(void)
     wl_display_roundtrip(pDisplay);
     wl_surface_commit(pSurface);
 
-    return TKWIN_NO_ERROR;
+    return true;
 }
 
 void tkwin_waylandDestroy(void) {}
