@@ -33,7 +33,7 @@ static void handleTopClose(void *data, struct xdg_toplevel *toplevel)
 {
     (void)data;
     (void)toplevel;
-    tkwin_close();
+    rpgtk_windowClose();
 }
 
 static void handleTopConfigure(void *data, struct xdg_toplevel *toplevel,

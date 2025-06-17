@@ -12,7 +12,7 @@ struct
     bool shouldClose;
 } window = {nullptr, true};
 
-bool tkwin_create(void)
+bool rpgtk_windowCreate(void)
 {
 #ifdef WAYLAND
     if (!tkwin_waylandCreate()) return false;
@@ -23,7 +23,7 @@ bool tkwin_create(void)
     return true;
 }
 
-void tkwin_destroy(void)
+void rpgtk_windowDestroy(void)
 {
 #ifdef WAYLAND
     tkwin_waylandDestroy();
@@ -32,7 +32,7 @@ void tkwin_destroy(void)
 #endif
 }
 
-bool tkwin_poll(void)
+bool rpgtk_windowProcess(void)
 {
 #ifdef WAYLAND
     window.shouldClose = tkwin_waylandPoll();
@@ -43,9 +43,9 @@ bool tkwin_poll(void)
     return window.shouldClose;
 }
 
-void tkwin_close(void) { window.shouldClose = true; }
+void rpgtk_windowClose(void) { window.shouldClose = true; }
 
-void tkwin_getFramebufferSize(uint32_t *width, uint32_t *height)
+void rpgtk_windowGetSize(uint32_t *width, uint32_t *height)
 {
 #ifdef WAYLAND
     tkwin_waylandGetFramebufferSize(width, height);
@@ -56,7 +56,7 @@ void tkwin_getFramebufferSize(uint32_t *width, uint32_t *height)
 #endif
 }
 
-void tkwin_getSurfaceData(void **data)
+void rpgtk_windowGetData(void **data)
 {
 #ifdef WAYLAND
     tkwin_waylandGetSurfaceData(data);
