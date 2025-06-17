@@ -1,3 +1,16 @@
+/**
+ * @file TKWindow.h
+ * @authors Israfil Argos
+ * @brief This file provides the implementation for the public interface
+ * declared in the @c TKWindow.h header file. This file is mostly a hub for all
+ * the various platform-dependent interfaces.
+ * @since v0.0.0.1
+ *
+ * @copyright (c) 2025 - the RPGtk Project
+ * This source file is under the GNU General Public License v3.0. For licensing
+ * and other information, see the @c LICENSE.md file that should have come with
+ * your copy of the source code, or https://www.gnu.org/licenses/gpl-3.0.txt.
+ */
 #include <TKWindow.h>
 
 #ifdef WAYLAND
@@ -12,10 +25,10 @@ struct
     bool shouldClose;
 } window = {nullptr, true};
 
-bool rpgtk_windowCreate(void)
+inline bool rpgtk_windowCreate(const char *title)
 {
 #ifdef WAYLAND
-    if (!tkwin_waylandCreate()) return false;
+    if (!tkwin_waylandCreate(title)) return false;
 #elifdef X11
     // TODO: X11 code
 #endif
@@ -23,7 +36,7 @@ bool rpgtk_windowCreate(void)
     return true;
 }
 
-void rpgtk_windowDestroy(void)
+inline void rpgtk_windowDestroy(void)
 {
 #ifdef WAYLAND
     tkwin_waylandDestroy();
@@ -32,7 +45,7 @@ void rpgtk_windowDestroy(void)
 #endif
 }
 
-bool rpgtk_windowProcess(void)
+inline bool rpgtk_windowProcess(void)
 {
 #ifdef WAYLAND
     window.shouldClose = tkwin_waylandPoll();
@@ -43,9 +56,9 @@ bool rpgtk_windowProcess(void)
     return window.shouldClose;
 }
 
-void rpgtk_windowClose(void) { window.shouldClose = true; }
+inline void rpgtk_windowClose(void) { window.shouldClose = true; }
 
-void rpgtk_windowGetSize(uint32_t *width, uint32_t *height)
+inline void rpgtk_windowGetSize(uint32_t *width, uint32_t *height)
 {
 #ifdef WAYLAND
     tkwin_waylandGetFramebufferSize(width, height);
@@ -56,7 +69,7 @@ void rpgtk_windowGetSize(uint32_t *width, uint32_t *height)
 #endif
 }
 
-void rpgtk_windowGetData(void **data)
+inline void rpgtk_windowGetData(void **data)
 {
 #ifdef WAYLAND
     tkwin_waylandGetSurfaceData(data);

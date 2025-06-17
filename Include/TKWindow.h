@@ -4,7 +4,7 @@
  * @brief This file provides the public interface for the TKWindow library, a
  * tiny wrapper around many different windowing systems. This file requires no
  * dependencies beyond the standard C @c stdint.h include.
- * @version 0.0.0.17
+ * @since v0.0.0.1
  *
  * @copyright (c) 2025 - the RPGtk Project
  * This source file is under the GNU General Public License v3.0. For licensing
@@ -27,14 +27,17 @@
  * @remark The created window is always fullscreen, undecorated, and focused off
  * the bat.
  *
+ * @param[in] title The title you wish your window to have. This must be
+ * NUL-terminated, it is not edited in any way during the course of the
+ * function.
  * @return A boolean value representing whether or not the window was created
  * successfully. This can be for any number of reasons, all of which are
  * documented in depth in the platform-dependent versions of this function.
  * However, a message will always be logged to an attatched @c tty explaining
  * any errors.
  */
-[[nodiscard]] [[gnu::flatten]]
-bool rpgtk_windowCreate(void);
+[[nodiscard]] [[gnu::flatten]] [[gnu::nonnull(1)]]
+bool rpgtk_windowCreate(const char *title);
 
 /**
  * @fn void rpgtk_windowDestroy(void)

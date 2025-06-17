@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-bool tkwin_waylandCreate(void);
+bool tkwin_waylandCreate(const char *title);
 void tkwin_waylandDestroy(void);
 bool tkwin_waylandPoll(void);
 

@@ -182,7 +182,7 @@ static void handleGlobalRemove(void *data, struct wl_registry *registry,
 static const struct wl_registry_listener pRegistryListener = {
     .global = handleGlobal, .global_remove = handleGlobalRemove};
 
-bool tkwin_waylandCreate(void)
+bool tkwin_waylandCreate(const char *title)
 {
     // TODO: Implment user-controlled Wayland server via command line
     // TODO: arguments given to the executable.
@@ -205,8 +205,8 @@ bool tkwin_waylandCreate(void)
     pToplevel = xdg_surface_get_toplevel(pShellSurface);
     xdg_toplevel_add_listener(pToplevel, &pToplevelListener, nullptr);
 
-    xdg_toplevel_set_title(pToplevel, "Stormsinger");
-    xdg_toplevel_set_app_id(pToplevel, "Stormsinger");
+    xdg_toplevel_set_title(pToplevel, title);
+    xdg_toplevel_set_app_id(pToplevel, title);
     xdg_toplevel_set_fullscreen(pToplevel, pOutput);
 
     wl_surface_commit(pSurface);
