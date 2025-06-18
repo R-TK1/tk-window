@@ -37,6 +37,7 @@
  * @var const struct wl_interface xdg_toplevel_interface
  * @brief The XDG toplevel interface, including functions that can be called and
  * events that can be applied. This is the version seven interface.
+ * @since v0.0.0.20
  *
  * @remark Most of the function definitions are missing to remove extraneous
  * data; the interface is still recognized as valid by the server, but we don't
@@ -75,6 +76,7 @@ static const struct wl_interface xdg_toplevel_interface = {
  * @var const struct wl_interface xdg_surface_interface
  * @brief The XDG surface interface, including functions that can be called and
  * events that can be applied. This is the version seven interface.
+ * @since v0.0.0.20
  *
  * @remark Some of the function definitions are missing to remove extraneous
  * data; the interface is still recognized as valid by the server, but we don't
@@ -99,6 +101,7 @@ static const struct wl_interface xdg_surface_interface = {
  * @var const struct wl_interface xdg_wm_base_interface
  * @brief The XDG window manager base interface, including functions that can be
  * called and events that can be applied. This is the version seven interface.
+ * @since v0.0.0.20
  *
  * @remark One of the function definitions are missing to remove extraneous
  * data; the interface is still recognized as valid by the server, but we don't
