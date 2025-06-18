@@ -1,26 +1,47 @@
+/**
+ * @file Wayland.c
+ * @authors Israfil Argos
+ * @brief This file provides the complete Wayland implementation of the TKWindow
+ * interface. This only depends upon the default C-standard @c stdint.h, @c
+ * stdio.h, and @c string.h files, and the Wayland client header @c
+ * wayland-client.h.
+ * @since v0.0.0.2
+ *
+ * @copyright (c) 2025 - the RPGtk Project
+ * This source file is under the GNU General Public License v3.0. For licensing
+ * and other information, see the @c LICENSE.md file that should have come with
+ * your copy of the source code, or https://www.gnu.org/licenses/gpl-3.0.txt.
+ */
+
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
 #include <wayland-client.h>
 
-static struct wl_display *pDisplay = nullptr;
-static struct wl_registry *pRegistry = nullptr;
-static struct wl_compositor *pCompositor = nullptr;
-static struct xdg_wm_base *pShell = nullptr;
-static struct wl_output *pOutput = nullptr;
+/**
+ * @def REFREF(expr)
+ * @brief Convert an interface into a double-referenced pointer via some casting
+ * nonsense. This is for the sole purpose of creating other interfaces (whose
+ * function signatures require an "array" of interfaces) and should not be used
+ * outside of this purpose. For all intents and purposes, this macro does not
+ * exist; ignore it.
+ * @since v0.0.0.23
+ *
+ * @param[in] interface The interface to convert into a double-referenced
+ * pointer, or "array".
+ * @return A constant @c wl_interface double-pointer.
+ */
+#define REFREF(interface) (const struct wl_interface **)(&interface)
 
-static struct wl_surface *pSurface = nullptr;
-static struct xdg_surface *pShellSurface = nullptr;
-static struct xdg_toplevel *pToplevel = nullptr;
-
-static int32_t pScaleFactor = 0;
-static uint32_t pWidth = 0;
-static uint32_t pHeight = 0;
-
-bool pClose = false;
-
-#define REFREF(expr) (const struct wl_interface **)(&expr)
-
+/**
+ * @var const struct wl_interface xdg_toplevel_interface
+ * @brief The XDG toplevel interface, including functions that can be called and
+ * events that can be applied. This is the version seven interface.
+ *
+ * @remark Most of the function definitions are missing to remove extraneous
+ * data; the interface is still recognized as valid by the server, but we don't
+ * store the strings in the executable.
+ */
 static const struct wl_interface xdg_toplevel_interface = {
     "xdg_toplevel",
     7,
@@ -50,6 +71,15 @@ static const struct wl_interface xdg_toplevel_interface = {
     },
 };
 
+/**
+ * @var const struct wl_interface xdg_surface_interface
+ * @brief The XDG surface interface, including functions that can be called and
+ * events that can be applied. This is the version seven interface.
+ *
+ * @remark Some of the function definitions are missing to remove extraneous
+ * data; the interface is still recognized as valid by the server, but we don't
+ * store the strings in the executable.
+ */
 static const struct wl_interface xdg_surface_interface = {
     "xdg_surface",
     7,
@@ -65,6 +95,15 @@ static const struct wl_interface xdg_surface_interface = {
     (struct wl_message[]){{"configure", "u", nullptr}},
 };
 
+/**
+ * @var const struct wl_interface xdg_wm_base_interface
+ * @brief The XDG window manager base interface, including functions that can be
+ * called and events that can be applied. This is the version seven interface.
+ *
+ * @remark One of the function definitions are missing to remove extraneous
+ * data; the interface is still recognized as valid by the server, but we don't
+ * store the strings in the executable.
+ */
 static const struct wl_interface xdg_wm_base_interface = {
     "xdg_wm_base",
     7,
@@ -78,6 +117,22 @@ static const struct wl_interface xdg_wm_base_interface = {
     1,
     (struct wl_message[]){{"ping", "u", nullptr}},
 };
+
+static struct wl_display *pDisplay = nullptr;
+static struct wl_registry *pRegistry = nullptr;
+static struct wl_compositor *pCompositor = nullptr;
+static struct xdg_wm_base *pShell = nullptr;
+static struct wl_output *pOutput = nullptr;
+
+static struct wl_surface *pSurface = nullptr;
+static struct xdg_surface *pShellSurface = nullptr;
+static struct xdg_toplevel *pToplevel = nullptr;
+
+static int32_t pScaleFactor = 0;
+static uint32_t pWidth = 0;
+static uint32_t pHeight = 0;
+
+bool pClose = false;
 
 static void handleConfigure(void *data, struct xdg_surface *shellSurface,
                             uint32_t serial)
@@ -182,6 +237,9 @@ void handleFinish(void *data, struct wl_output *output)
 {
     (void)data;
     (void)output;
+
+    wl_output_destroy(pOutput);
+    pOutput = nullptr;
 }
 
 void handleScale(void *data, struct wl_output *output, int32_t factor)
@@ -323,7 +381,27 @@ bool windowCreate(const char *title)
     return true;
 }
 
-void windowDestroy(void) {}
+void windowDestroy(void)
+{
+    // xdg_toplevel_destroy
+    wl_proxy_marshal_flags((struct wl_proxy *)pToplevel, 0, NULL,
+                           wl_proxy_get_version((struct wl_proxy *)pToplevel),
+                           WL_MARSHAL_FLAG_DESTROY);
+    // xdg_surface_destroy
+    wl_proxy_marshal_flags(
+        (struct wl_proxy *)pShellSurface, 0, NULL,
+        wl_proxy_get_version((struct wl_proxy *)pShellSurface),
+        WL_MARSHAL_FLAG_DESTROY);
+    // xdg_wm_base_destroy
+    wl_proxy_marshal_flags((struct wl_proxy *)pShell, 0, NULL,
+                           wl_proxy_get_version((struct wl_proxy *)pShell),
+                           WL_MARSHAL_FLAG_DESTROY);
+
+    wl_surface_destroy(pSurface);
+    wl_compositor_destroy(pCompositor);
+    wl_registry_destroy(pRegistry);
+    wl_display_disconnect(pDisplay);
+}
 
 bool windowProcess(void) { return wl_display_dispatch(pDisplay) != -1; }
 

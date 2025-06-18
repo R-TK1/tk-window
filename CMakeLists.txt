@@ -8,7 +8,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("TKWindow" LANGUAGES C VERSION 0.0.0.23)
+project("TKWindow" LANGUAGES C VERSION 0.0.0.24)
 
 include(Helpers)
 run_checks(ON)
