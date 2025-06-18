@@ -2,9 +2,8 @@
  * @file Wayland.c
  * @authors Israfil Argos
  * @brief This file provides the complete Wayland implementation of the TKWindow
- * interface. This only depends upon the default C-standard @c stdint.h, @c
- * stdio.h, and @c string.h files, and the Wayland client header @c
- * wayland-client.h.
+ * interface. This only depends upon the default C-standard @c stdint.h, and @c
+ * string.h files, and the Wayland client header @c wayland-client.h.
  * @since v0.0.0.2
  *
  * @copyright (c) 2025 - the RPGtk Project
@@ -13,8 +12,8 @@
  * your copy of the source code, or https://www.gnu.org/licenses/gpl-3.0.txt.
  */
 
+#include <TKLogging.h>
 #include <stdint.h>
-#include <stdio.h>
 #include <string.h>
 #include <wayland-client.h>
 
@@ -243,7 +242,7 @@ static void handleTopConfigure(void *data, struct xdg_toplevel *toplevel,
 
     pWidth = width * pScale;
     pHeight = height * pScale;
-    printf("Window dimensions adjusted: %dx%d.\n", pWidth, pHeight);
+    rpgtk_log(VERBOSE, "Window dimensions adjusted: %dx%d.", pWidth, pHeight);
 }
 
 static void handleTopConfigureBounds(void *data, struct xdg_toplevel *toplevel,
@@ -319,7 +318,7 @@ void handleScale(void *data, struct wl_output *output, int32_t factor)
     (void)data;
     (void)output;
     pScale = factor;
-    printf("Monitor scale %d.\n", pScale);
+    rpgtk_log(VERBOSE, "Monitor scale %d.", pScale);
 }
 
 void handleName(void *data, struct wl_output *output, const char *name)
@@ -371,7 +370,7 @@ static void handleGlobal(void *data, struct wl_registry *registry,
         pCompositor =
             wl_registry_bind(registry, name, &wl_compositor_interface, 1);
         if (pCompositor == nullptr)
-            perror("Failed to connect to compositor. Code: ");
+            rpgtk_log(ERROR, "Failed to connect to compositor.");
     }
     else if (strcmp(interface, "xdg_wm_base") == 0)
     {
@@ -383,7 +382,8 @@ static void handleGlobal(void *data, struct wl_registry *registry,
     else if (strcmp(interface, wl_output_interface.name) == 0)
     {
         pOutput = wl_registry_bind(registry, name, &wl_output_interface, 2);
-        if (pOutput == nullptr) perror("Failed to connect to output. Code: ");
+        if (pOutput == nullptr)
+            rpgtk_log(ERROR, "Failed to connect to output.");
         wl_output_add_listener(pOutput, &outputListener, nullptr);
     }
 }
@@ -404,7 +404,7 @@ bool windowCreate(const char *title)
     pDisplay = wl_display_connect(nullptr);
     if (pDisplay == nullptr)
     {
-        perror("Failed to connect to Wayland display server. Code: ");
+        rpgtk_log(ERROR, "Failed to connect to display server.");
         return false;
     }
 
