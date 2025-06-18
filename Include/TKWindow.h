@@ -36,8 +36,12 @@
  * However, a message will always be logged to an attatched @c tty explaining
  * any errors.
  */
-[[nodiscard]] [[gnu::flatten]] [[gnu::nonnull(1)]]
-bool rpgtk_windowCreate(const char *title);
+[[nodiscard]] [[gnu::nonnull(1)]] [[gnu::always_inline]]
+inline bool rpgtk_windowCreate(const char *title)
+{
+    extern bool windowCreate(const char *title);
+    return windowCreate(title);
+}
 
 /**
  * @fn void rpgtk_windowDestroy(void)
@@ -52,8 +56,12 @@ bool rpgtk_windowCreate(const char *title);
  * should be deinitialized before this function is called. To close the window,
  * please see @ref rpgtk_windowClose(void).
  */
-[[gnu::flatten]]
-void rpgtk_windowDestroy(void);
+[[gnu::always_inline]]
+inline void rpgtk_windowDestroy(void)
+{
+    extern void windowDestroy(void);
+    windowDestroy();
+}
 
 /**
  * @fn bool rpgtk_windowProcess(void)
@@ -67,8 +75,12 @@ void rpgtk_windowDestroy(void);
  * The window processing failing does not necessarily mean an error has
  * occurred, simply that processing cannot continue.
  */
-[[nodiscard]] [[gnu::hot]] [[gnu::flatten]]
-bool rpgtk_windowProcess(void);
+[[nodiscard]] [[gnu::hot]] [[gnu::always_inline]]
+inline bool rpgtk_windowProcess(void)
+{
+    extern bool windowProcess(void);
+    return windowProcess();
+}
 
 /**
  * @fn void rpgtk_windowClose(void)
@@ -79,8 +91,12 @@ bool rpgtk_windowProcess(void);
  * @remark This does not destroy the window. For that you should see @ref
  * rpgtk_windowDestroy(void), which should be called after this function.
  */
-[[gnu::flatten]]
-void rpgtk_windowClose(void);
+[[gnu::always_inline]]
+inline void rpgtk_windowClose(void)
+{
+    extern bool pClose;
+    pClose = true;
+}
 
 /**
  * @fn void rpgtk_windowGetSize(uint32_t *width, uint32_t *height)
@@ -93,8 +109,12 @@ void rpgtk_windowClose(void);
  * @param[out] width The storage for the width of the framebuffer in pixels.
  * @param[out] height The storage for the height of the framebuffer in pixels.
  */
-[[gnu::nonnull(1, 2)]] [[gnu::flatten]]
-void rpgtk_windowGetSize(uint32_t *width, uint32_t *height);
+[[gnu::nonnull(1, 2)]] [[gnu::always_inline]]
+inline void rpgtk_windowGetSize(uint32_t *width, uint32_t *height)
+{
+    extern void windowGetSize(uint32_t *width, uint32_t *height);
+    windowGetSize(width, height);
+}
 
 /**
  * @fn void rpgtk_windowGetData(void **data)
@@ -108,7 +128,11 @@ void rpgtk_windowGetSize(uint32_t *width, uint32_t *height);
  * @param[out] data The data array. This is not touched by the function, so it
  * must contain enough space to properly handle all items passed to it.
  */
-[[gnu::nonnull(1)]] [[gnu::flatten]]
-void rpgtk_windowGetData(void **data);
+[[gnu::nonnull(1)]] [[gnu::always_inline]]
+inline void rpgtk_windowGetData(void **data)
+{
+    extern void windowGetData(void **data);
+    windowGetData(data);
+}
 
 #endif // TKWINDOW_MAIN_H
