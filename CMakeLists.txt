@@ -8,11 +8,11 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("TKWindow" LANGUAGES C VERSION 0.0.0.26)
+project("TKWindow" LANGUAGES C VERSION 0.0.0.27)
 
 include(Helpers)
 run_checks(ON)
 
-create_target(OFF)
+create_target(OFF RAW_SOURCES "${TK_UNDERLYING_SYSTEM}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${TK_UNDERLYING_SYSTEM_UC})
 link_external(${TK_UNDERLYING_SYSTEM})
