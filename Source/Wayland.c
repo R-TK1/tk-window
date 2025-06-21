@@ -6,6 +6,16 @@
  * string.h files, and the Wayland client header @c wayland-client.h.
  * @since v0.0.0.2
  *
+ * @note This file contains material (the contents of the XDG-shell protocol)
+ * copyrighted by the following people. All rights are reserved to their proper
+ * owners.
+ * Copyright © 2008-2013 Kristian Høgsberg
+ * Copyright © 2013      Rafael Antognolli
+ * Copyright © 2013      Jasper St. Pierre
+ * Copyright © 2010-2013 Intel Corporation
+ * Copyright © 2015-2017 Samsung Electronics Co., Ltd
+ * Copyright © 2015-2017 Red Hat Inc.
+ *
  * @copyright (c) 2025 - the RPGtk Project
  * This source file is under the GNU General Public License v3.0. For licensing
  * and other information, see the @c LICENSE.md file that should have come with
@@ -14,6 +24,7 @@
 
 #include <TKLogging.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <string.h>
 #include <wayland-client.h>
 
@@ -172,8 +183,7 @@ static struct wl_surface *pSurface = nullptr;
 /**
  * @var struct wl_output *pOutput
  * @brief The pixel output device, or monitor. This is the object we pull
- * dimensions from in order to size the window. This object is freed once we
- * recieve all required information from it.
+ * dimensions from in order to size the window.
  * @since v0.0.0.2
  */
 static struct wl_output *pOutput = nullptr;
@@ -204,160 +214,230 @@ static struct xdg_surface *pShellSurface = nullptr;
  */
 static struct xdg_toplevel *pToplevel = nullptr;
 
+/**
+ * @var int32_t pScale
+ * @brief The monitor scale of screen coordinates to pixels. This is nearly
+ * always one, unless on a display like the Apple Retina.
+ * @since v0.0.0.2
+ */
 static int32_t pScale = 0;
+
+/**
+ * @var uint32_t pWidth
+ * @brief The width of the window in @b pixels. This value is recieved from the
+ * display server and multiplied by @ref int32_t pScale to grab the actual pixel
+ * value.
+ * @since v0.0.0.2
+ */
 static uint32_t pWidth = 0;
+
+/**
+ * @var uint32_t pHeight
+ * @brief The height of the window in @b pixels. This value is recieved from the
+ * display server and multiplied by @ref int32_t pScale to grab the actual pixel
+ * value.
+ * @since v0.0.0.2
+ */
 static uint32_t pHeight = 0;
 
-static void handleConfigure(void *data, struct xdg_surface *shellSurface,
-                            uint32_t serial)
+/**
+ * @copydoc xdg_wm_base_listener::ping
+ */
+static void ping(void *, struct xdg_wm_base *b, uint32_t s)
 {
-    (void)data;
-
-    // xdg_surface_ack_configure
-    wl_proxy_marshal_flags(
-        (struct wl_proxy *)shellSurface, 4, NULL,
-        wl_proxy_get_version((struct wl_proxy *)shellSurface), 0, serial);
+    // xdg_wm_base_pong
+    wl_proxy_marshal_flags((struct wl_proxy *)b, 3, nullptr,
+                           wl_proxy_get_version((struct wl_proxy *)b), 0, s);
 }
 
-static const struct
+/**
+ * @struct xdg_wm_base_listener Wayland.c "Source/Wayland.c"
+ * @brief An interface for handling events sent from the XDG "registry" object,
+ * @c wm_base. This is basically a nerdy game of table tennis, we just recieve a
+ * ping and send back a pong, over and over again so the WM doesn't think we're
+ * a zombie.
+ * @since v0.0.0.20
+ */
+static struct xdg_wm_base_listener
 {
-    void (*configure)(void *data, struct xdg_surface *xdg_surface,
-                      uint32_t serial);
-} pShellSurfaceListener = {.configure = handleConfigure};
+    /**
+     * @property ping
+     * @brief The ping event asks the client if it’s still alive. Pass the
+     * serial specified in the event back to the compositor by sending a “pong”
+     * request back with the specified serial. A compositor is free to ping in
+     * any way it wants, but a client must always respond to any xdg_wm_base
+     * object it created.
+     * @since v0.0.0.20
+     *
+     * @remark It’s unspecified what will happen if the client doesn’t respond
+     * to the ping request, or in what timeframe.
+     *
+     * @param[in] data Any data to be sent alongside events.
+     * @param[in] base The window mananger base object that generated the event.
+     * @param[in] serial The serial code of the event. The client must respond
+     * to the ping with this serial code in its pong.
+     */
+    void (*ping)(void *data, struct xdg_wm_base *base, uint32_t serial);
+}
+/**
+ * @var struct xdg_wm_base_listener pShellListener
+ * @brief The listener for the XDG window manager base object, which is
+ * basically the "registry" for the XDG Shell protocol.
+ * @since v0.0.0.2
+ *
+ * @copydoc xdg_wm_base_listener
+ */
+pShellListener = {.ping = &ping};
 
-static void handleTopClose(void *data, struct xdg_toplevel *toplevel)
+/**
+ * @copydoc xdg_surface_listener::configure
+ */
+static void configure(void *, struct xdg_surface *t, uint32_t s)
 {
-    (void)data;
-    (void)toplevel;
+    rpgtk_log(VERBOSE_OK, "Configure request completed.");
+    // Acknowlege the configuration. (xdg_surface_ack_configure)
+    wl_proxy_marshal_flags((struct wl_proxy *)t, 4, nullptr,
+                           wl_proxy_get_version((struct wl_proxy *)t), 0, s);
+}
+
+/**
+ * @struct xdg_surface_listener Wayland.c "Source/Wayland.c"
+ * @brief An interface for handling events for the @c xdg_surface wrapper around
+ * the @c wl_surface object.
+ * @since v0.0.0.20
+ */
+static const struct xdg_surface_listener
+{
+    /**
+     * @property configure
+     * @brief The configure event marks the end of a configure sequence. A
+     * configure sequence is a set of one or more events configuring the state
+     * of the xdg_surface. Clients should send an ack_configure before
+     * committing the new surface.
+     * @since v0.0.0.20
+     *
+     * @remark Where applicable, xdg_surface surface roles will during a
+     * configure sequence extend this event as a latched state sent as events
+     * before the xdg_surface.configure event. If the client receives multiple
+     * configure events before it can respond to one, it is free to discard all
+     * but the last event it received.
+     *
+     * @param[in] data Any user-defined data sent alongside the surface.
+     * @param[in] surface The surface who is being configured.
+     * @param[in] serial The serial ID of this event. This should be sent
+     * alongside a configuration acknowledgement event.
+     */
+    void (*configure)(void *data, struct xdg_surface *surface, uint32_t serial);
+}
+/**
+ * @var struct xdg_surface_listener pShellSurfaceListener
+ * @brief The listener for the XDG surface object. This handles exclusvely
+ * surface-level configuration-end events sent by the server.
+ * @since v0.0.0.2
+ *
+ * @copydoc xdg_surface_listener
+ */
+pShellSurfaceListener = {&configure};
+
+/**
+ * @copydoc xdg_toplevel_listener::topConfigure
+ */
+static void topConfigure(void *, struct xdg_toplevel *, int32_t w, int32_t h,
+                         struct wl_array *s)
+{
+    rpgtk_log(VERBOSE_BEGIN, "Configure request recieved.");
+
+    pWidth = (uint32_t)(w * pScale);
+    pHeight = (uint32_t)(h * pScale);
+    wl_surface_commit(pSurface);
+    rpgtk_log(VERBOSE, "Window dimensions adjusted: %dx%d.", pWidth, pHeight);
+
+    int32_t *states = s->data;
+    for (size_t i = 0; i < s->size / sizeof(int32_t); i++) switch (states[i])
+        {
+            case 2:
+                rpgtk_log(VERBOSE, "The window is now fullscreened.");
+                break;
+            default:
+                rpgtk_log(WARNING, "Got unknown state value '%d'.", states[i]);
+                break;
+        }
+}
+
+/**
+ * @copydoc xdg_toplevel_listener::close
+ */
+static void close(void *, struct xdg_toplevel *)
+{
+    rpgtk_log(LOG, "Closing window.");
     pClose = true;
 }
 
-static void handleTopConfigure(void *data, struct xdg_toplevel *toplevel,
-                               int32_t width, int32_t height,
-                               struct wl_array *states)
+/**
+ * @copydoc xdg_toplevel_listener::bounds
+ */
+static void bounds(void *, struct xdg_toplevel *, int32_t w, int32_t h)
 {
-    (void)data;
-    (void)toplevel;
-    (void)states;
-
-    pWidth = width * pScale;
-    pHeight = height * pScale;
-    rpgtk_log(VERBOSE, "Window dimensions adjusted: %dx%d.", pWidth, pHeight);
+    rpgtk_log(VERBOSE, "Recommended dimensions: %dx%d.", w, h);
 }
 
-static void handleTopConfigureBounds(void *data, struct xdg_toplevel *toplevel,
-                                     int32_t width, int32_t height)
+/**
+ * @copydoc xdg_toplevel_listener::capabilities
+ */
+static void capabilities(void *, struct xdg_toplevel *, struct wl_array *c)
 {
-    (void)data;
-    (void)toplevel;
-    (void)width;
-    (void)height;
-}
+    int32_t *states = c->data;
+    for (size_t i = 0; i < c->size / sizeof(int32_t); i++)
+    {
+        if (states[i] == 3)
+        {
+            rpgtk_log(VERBOSE_OK, "Found fullscreen support.");
+            return;
+        }
+    }
 
-static void handleCapabilities(void *data, struct xdg_toplevel *toplevel,
-                               struct wl_array *capabilities)
-{
-    (void)data;
-    (void)toplevel;
-    (void)capabilities;
+    rpgtk_log(ERROR, "No fullscreen support available.");
 }
 
 static const struct
 {
-    void (*configure)(void *data, struct xdg_toplevel *xdg_toplevel,
-                      int32_t width, int32_t height, struct wl_array *states);
+    void (*topConfigure)(void *data, struct xdg_toplevel *toplevel,
+                         int32_t width, int32_t height,
+                         struct wl_array *states);
 
-    void (*close)(void *data, struct xdg_toplevel *xdg_toplevel);
+    void (*close)(void *data, struct xdg_toplevel *toplevel);
 
-    void (*configure_bounds)(void *data, struct xdg_toplevel *xdg_toplevel,
-                             int32_t width, int32_t height);
+    void (*bounds)(void *data, struct xdg_toplevel *toplevel, int32_t width,
+                   int32_t height);
 
-    void (*wm_capabilities)(void *data, struct xdg_toplevel *xdg_toplevel,
-                            struct wl_array *capabilities);
-} pToplevelListener = {.close = handleTopClose,
-                       .configure = handleTopConfigure,
-                       .configure_bounds = handleTopConfigureBounds,
-                       .wm_capabilities = handleCapabilities};
+    void (*capabilities)(void *data, struct xdg_toplevel *toplevel,
+                         struct wl_array *capabilities);
+} pToplevelListener = {&topConfigure, &close, &bounds, &capabilities};
 
-void handleGeometry(void *data, struct wl_output *output, int32_t x, int32_t y,
-                    int32_t physical_width, int32_t physical_height,
-                    int32_t subpixel, const char *make, const char *model,
-                    int32_t transform)
+static void geometry(void *, struct wl_output *, int32_t, int32_t, int32_t,
+                     int32_t, int32_t, const char *, const char *, int32_t)
 {
-    (void)data;
-    (void)output;
-    (void)x;
-    (void)y;
-    (void)physical_width;
-    (void)physical_height;
-    (void)subpixel;
-    (void)make;
-    (void)model;
-    (void)transform;
 }
 
-void handleMode(void *data, struct wl_output *output, uint32_t flags,
-                int32_t width, int32_t height, int32_t refresh)
+static void mode(void *, struct wl_output *, uint32_t, int32_t, int32_t,
+                 int32_t)
 {
-    (void)data;
-    (void)output;
-    (void)flags;
-    (void)width;
-    (void)height;
-    (void)refresh;
 }
 
-void handleFinish(void *data, struct wl_output *output)
-{
-    (void)data;
-    (void)output;
-}
+static void finish(void *, struct wl_output *) {}
 
-void handleScale(void *data, struct wl_output *output, int32_t factor)
+static void scale(void *, struct wl_output *, int32_t s)
 {
-    (void)data;
-    (void)output;
-    pScale = factor;
+    pScale = s;
     rpgtk_log(VERBOSE, "Monitor scale %d.", pScale);
 }
 
-void handleName(void *data, struct wl_output *output, const char *name)
-{
-    (void)data;
-    (void)output;
-    (void)name;
-}
+static void name(void *, struct wl_output *, const char *) {}
 
-void handleDescription(void *data, struct wl_output *output,
-                       const char *description)
-{
-    (void)data;
-    (void)output;
-    (void)description;
-}
+static void description(void *, struct wl_output *, const char *) {}
 
-static const struct wl_output_listener outputListener = {
-    .description = handleDescription,
-    .done = handleFinish,
-    .geometry = handleGeometry,
-    .mode = handleMode,
-    .name = handleName,
-    .scale = handleScale};
-
-static void handlePing(void *data, struct xdg_wm_base *shell, uint32_t serial)
-{
-    (void)data;
-
-    // xdg_wm_base_pong
-    wl_proxy_marshal_flags((struct wl_proxy *)shell, 3, nullptr,
-                           wl_proxy_get_version((struct wl_proxy *)shell), 0,
-                           serial);
-}
-
-static struct
-{
-    void (*ping)(void *data, struct xdg_wm_base *xdg_wm_base, uint32_t serial);
-} pShellListener = {.ping = handlePing};
+static const struct wl_output_listener pOutputListener = {
+    &geometry, &mode, &finish, &scale, &name, &description};
 
 static void handleGlobal(void *data, struct wl_registry *registry,
                          uint32_t name, const char *interface, uint32_t version)
@@ -368,23 +448,40 @@ static void handleGlobal(void *data, struct wl_registry *registry,
     if (strcmp(interface, wl_compositor_interface.name) == 0)
     {
         pCompositor =
-            wl_registry_bind(registry, name, &wl_compositor_interface, 1);
+            wl_registry_bind(registry, name, &wl_compositor_interface, version);
         if (pCompositor == nullptr)
+        {
             rpgtk_log(ERROR, "Failed to connect to compositor.");
+            return;
+        }
+        rpgtk_log(VERBOSE_OK, "Connected to compositor v%d.", version);
     }
     else if (strcmp(interface, "xdg_wm_base") == 0)
     {
-        pShell = wl_registry_bind(registry, name, &xdg_wm_base_interface, 1);
+        pShell =
+            wl_registry_bind(registry, name, &xdg_wm_base_interface, version);
+        if (pShell == nullptr)
+        {
+            rpgtk_log(ERROR, "Failed to connect to window manager.");
+            return;
+        }
+
         // xdg_wm_base_add_listener
         wl_proxy_add_listener((struct wl_proxy *)pShell,
                               (void (**)(void))&pShellListener, data);
+        rpgtk_log(VERBOSE_OK, "Connected to window manager v%d.", version);
     }
     else if (strcmp(interface, wl_output_interface.name) == 0)
     {
-        pOutput = wl_registry_bind(registry, name, &wl_output_interface, 2);
+        pOutput =
+            wl_registry_bind(registry, name, &wl_output_interface, version);
         if (pOutput == nullptr)
+        {
             rpgtk_log(ERROR, "Failed to connect to output.");
-        wl_output_add_listener(pOutput, &outputListener, nullptr);
+            return;
+        }
+        wl_output_add_listener(pOutput, &pOutputListener, nullptr);
+        rpgtk_log(VERBOSE_OK, "Connected to output v%d.", version);
     }
 }
 
@@ -401,6 +498,7 @@ static const struct wl_registry_listener pRegistryListener = {
 
 bool windowCreate(const char *title)
 {
+    // setenv("WAYLAND_DEBUG", "1", true);
     pDisplay = wl_display_connect(nullptr);
     if (pDisplay == nullptr)
     {
@@ -412,13 +510,18 @@ bool windowCreate(const char *title)
     pRegistry = wl_display_get_registry(pDisplay);
     (void)wl_registry_add_listener(pRegistry, &pRegistryListener, nullptr);
     (void)wl_display_roundtrip(pDisplay);
+    if (pCompositor == nullptr || pShell == nullptr)
+    {
+        rpgtk_log(ERROR, "Could not find compositor and/or shell.");
+        return false;
+    }
 
     pSurface = wl_compositor_create_surface(pCompositor);
     // xdg_wm_base_get_xdg_surface
-    pShellSurface = (struct xdg_surface *)wl_proxy_marshal_flags(
+    struct wl_proxy *id = wl_proxy_marshal_flags(
         (struct wl_proxy *)pShell, 2, &xdg_surface_interface,
         wl_proxy_get_version((struct wl_proxy *)pShell), 0, nullptr, pSurface);
-
+    pShellSurface = (struct xdg_surface *)id;
     // xdg_surface_add_listener
     wl_proxy_add_listener((struct wl_proxy *)pShellSurface,
                           (void (**)(void))&pShellSurfaceListener, nullptr);
@@ -427,9 +530,6 @@ bool windowCreate(const char *title)
     pToplevel = (struct xdg_toplevel *)wl_proxy_marshal_flags(
         (struct wl_proxy *)pShellSurface, 1, &xdg_toplevel_interface,
         wl_proxy_get_version((struct wl_proxy *)pShellSurface), 0, nullptr);
-    // xdg_toplevel_add_listener
-    wl_proxy_add_listener((struct wl_proxy *)pToplevel,
-                          (void (**)(void))&pToplevelListener, nullptr);
 
     // xdg_toplevel_set_title
     wl_proxy_marshal_flags((struct wl_proxy *)pToplevel, 2, NULL,
@@ -443,12 +543,10 @@ bool windowCreate(const char *title)
     wl_proxy_marshal_flags((struct wl_proxy *)pToplevel, 11, NULL,
                            wl_proxy_get_version((struct wl_proxy *)pToplevel),
                            0, pOutput);
-
+    // xdg_toplevel_add_listener
+    wl_proxy_add_listener((struct wl_proxy *)pToplevel,
+                          (void (**)(void))&pToplevelListener, nullptr);
     wl_surface_commit(pSurface);
-    wl_display_roundtrip(pDisplay);
-    wl_surface_commit(pSurface);
-
-    wl_output_destroy(pOutput);
 
     return true;
 }
@@ -471,6 +569,7 @@ void windowDestroy(void)
 
     wl_surface_destroy(pSurface);
     wl_compositor_destroy(pCompositor);
+    wl_output_release(pOutput);
     wl_registry_destroy(pRegistry);
     wl_display_disconnect(pDisplay);
 }
