@@ -31,37 +31,27 @@
  * NUL-terminated, it is not edited in any way during the course of the
  * function.
  * @return A boolean value representing whether or not the window was created
- * successfully. This can be for any number of reasons, all of which are
- * documented in depth in the platform-dependent versions of this function.
- * However, a message will always be logged to an attatched @c tty explaining
- * any errors.
+ * successfully. A message will always be logged to an attached @c tty
+ * explaining any errors.
  */
-[[nodiscard]] [[gnu::nonnull(1)]] [[gnu::always_inline]]
-inline bool waterlily_windowCreate(const char *title)
-{
-    extern bool windowCreate(const char *title);
-    return windowCreate(title);
-}
+[[nodiscard]] [[gnu::nonnull(1)]]
+extern bool waterlily_windowCreate(const char *title);
 
 /**
  * @fn void waterlily_windowDestroy(void)
  * @brief Destroy the main window object of the engine. This should only be
  * called when a window is truly created, to prevent double-frees and other
- * undefined behaviors. There are no checks in this function for anything but
- * internal failure, call only when you're certain there is a window created.
+ * undefined behaviors. There are no checks in this function for anything
+ * but internal failure, call only when you're certain there is a window
+ * created.
  * @since v0.0.0.1
  *
- * @remark This function kills the window without asking for permission from any
- * other running processes. All other dependents (like graphical processes)
- * should be deinitialized before this function is called. To close the window,
- * please see @ref waterlily_windowClose(void).
+ * @remark This function kills the window without asking for permission from
+ * any other running processes. All other dependents (like graphical
+ * processes) should be deinitialized before this function is called. To
+ * close the window, please see @ref waterlily_windowClose(void).
  */
-[[gnu::always_inline]]
-inline void waterlily_windowDestroy(void)
-{
-    extern void windowDestroy(void);
-    windowDestroy();
-}
+extern void waterlily_windowDestroy(void);
 
 /**
  * @fn bool waterlily_windowProcess(void)
@@ -75,12 +65,8 @@ inline void waterlily_windowDestroy(void)
  * The window processing failing does not necessarily mean an error has
  * occurred, simply that processing cannot continue.
  */
-[[nodiscard]] [[gnu::hot]] [[gnu::always_inline]]
-inline bool waterlily_windowProcess(void)
-{
-    extern bool windowProcess(void);
-    return windowProcess();
-}
+[[nodiscard]] [[gnu::hot]]
+extern bool waterlily_windowProcess(void);
 
 /**
  * @fn void waterlily_windowClose(void)
@@ -91,12 +77,7 @@ inline bool waterlily_windowProcess(void)
  * @remark This does not destroy the window. For that you should see @ref
  * waterlily_windowDestroy(void), which should be called after this function.
  */
-[[gnu::always_inline]]
-inline void waterlily_windowClose(void)
-{
-    extern bool pClose;
-    pClose = true;
-}
+extern void waterlily_windowClose(void);
 
 /**
  * @fn void waterlily_windowGetSize(uint32_t *width, uint32_t *height)
@@ -104,23 +85,18 @@ inline void waterlily_windowClose(void)
  * @since v0.0.0.9
  *
  * @remark On most platforms, this will equal the size in screen coordinates,
- * but on platforms like the Apple Retina display, this is not the case.
+ * but on some displays like the Apple Retina, this is not the case.
  *
  * @param[out] width The storage for the width of the framebuffer in pixels.
  * @param[out] height The storage for the height of the framebuffer in pixels.
  */
-[[gnu::nonnull(1, 2)]] [[gnu::always_inline]]
-inline void waterlily_windowGetSize(uint32_t *width, uint32_t *height)
-{
-    extern void windowGetSize(uint32_t *width, uint32_t *height);
-    windowGetSize(width, height);
-}
+[[gnu::nonnull(1, 2)]]
+extern void waterlily_windowGetSize(uint32_t *width, uint32_t *height);
 
 /**
  * @fn void waterlily_windowGetData(void **data)
  * @brief Get the native data specific to this window. Each platform has its own
- * set of data, discussed in detail in the platform-specific version of this
- * function.
+ * set of data.
  *
  * @remark the following data is provided for each platform, in the order
  * specified; Wayland: @c wl_display, @c wl_surface, X11: N/A.
@@ -128,11 +104,7 @@ inline void waterlily_windowGetSize(uint32_t *width, uint32_t *height)
  * @param[out] data The data array. This is not touched by the function, so it
  * must contain enough space to properly handle all items passed to it.
  */
-[[gnu::nonnull(1)]] [[gnu::always_inline]]
-inline void waterlily_windowGetData(void **data)
-{
-    extern void windowGetData(void **data);
-    windowGetData(data);
-}
+[[gnu::nonnull(1)]]
+extern void waterlily_windowGetData(void **data);
 
 #endif // WLWINDOW_MAIN_H
