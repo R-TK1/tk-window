@@ -354,16 +354,20 @@ static void topConfigure(void *, struct xdg_toplevel *, int32_t w, int32_t h,
                   pHeight);
 
     int32_t *states = s->data;
-    for (size_t i = 0; i < s->size / sizeof(int32_t); i++) switch (states[i])
+    for (size_t i = 0; i < s->size / sizeof(int32_t); i++)
+    {
+        switch (states[i])
         {
             case 2:
                 waterlily_log(VERBOSE, "The window is now fullscreened.");
                 break;
+            case 9: waterlily_log(NOTE, "The window is now suspended."); break;
             default:
                 waterlily_log(WARNING, "Got unknown state value '%d'.",
                               states[i]);
                 break;
         }
+    }
 }
 
 /**
@@ -548,7 +552,6 @@ bool windowCreate(const char *title)
     // xdg_toplevel_add_listener
     wl_proxy_add_listener((struct wl_proxy *)pToplevel,
                           (void (**)(void))&pToplevelListener, nullptr);
-    wl_surface_commit(pSurface);
 
     return true;
 }
