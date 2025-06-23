@@ -385,10 +385,7 @@ static void close(void *, struct xdg_toplevel *)
 /**
  * @copydoc xdg_toplevel_listener::bounds
  */
-static void bounds(void *, struct xdg_toplevel *, int32_t w, int32_t h)
-{
-    waterlily_log(VERBOSE, "Recommended dimensions: %dx%d.", w, h);
-}
+static void bounds(void *, struct xdg_toplevel *, int32_t, int32_t) {}
 
 /**
  * @copydoc xdg_toplevel_listener::capabilities
