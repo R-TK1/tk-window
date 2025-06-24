@@ -6,7 +6,7 @@
  * dependencies beyond the standard C @c stdint.h include.
  * @since v0.0.0.1
  *
- * @copyright (c) 2025 - the RPGtk Project
+ * @copyright (c) 2025 - the Waterlily Team
  * This source file is under the GNU General Public License v3.0. For licensing
  * and other information, see the @c LICENSE.md file that should have come with
  * your copy of the source code, or https://www.gnu.org/licenses/gpl-3.0.txt.

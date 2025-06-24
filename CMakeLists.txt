@@ -8,7 +8,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("WLWindow" LANGUAGES C VERSION 0.0.0.36)
+project("WLWindow" LANGUAGES C VERSION 0.0.0.37)
 
 include(Helpers)
 run_checks(ON)
