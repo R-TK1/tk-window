@@ -14,7 +14,7 @@ A tiny, very specialized windowing wrapper written in [C23](https://en.wikipedia
 WLWindow current supports the following [operating systems](https://en.wikipedia.org/wiki/Operating_system) and [processor architectures](https://en.wikipedia.org/wiki/Instruction_set_architecture).
 
 - [Linux](https://en.wikipedia.org/wiki/Linux): Currently supported. Tested on [`arch`](https://en.wikipedia.org/wiki/Arch_Linux).
-    - [x64](https://en.wikipedia.org/wiki/X86-64): Currently supported. Test on a [`AMD Ryzen™ 5 5600H`](https://en.wikipedia.org/wiki/List_of_AMD_Ryzen_processors#Desktop_processors).
+    - [x64](https://en.wikipedia.org/wiki/X86-64): Currently supported. Tested on a [`AMD Ryzen™ 5 5600H`](https://en.wikipedia.org/wiki/List_of_AMD_Ryzen_processors#Desktop_processors).
     - [ARM64](https://en.wikipedia.org/wiki/AArch64): **Not yet supported, but planned.**
 - [MacOS](https://en.wikipedia.org/wiki/MacOS): **Not yet supported, but planned.**
     - [Apple Silicon](https://en.wikipedia.org/wiki/Apple_silicon): **Not yet supported, but planned.**
