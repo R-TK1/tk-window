@@ -239,8 +239,22 @@ static uint32_t pWidth = 0;
  */
 static uint32_t pHeight = 0;
 
+/**
+ * @var uint8_t pFoundInterfaces
+ * @brief A count of the interfaces we've found reported by the registry. This
+ * must match @ref uint8_t pRequiredInterfaces, or the process will throw a
+ * tantrum.
+ * @since v0.0.0.35
+ */
 static uint8_t pFoundInterfaces = 0;
-static uint8_t pRequiredInterfaces = 3;
+
+/**
+ * @var uint8_t pRequiredInterfaces
+ * @brief A count of the interfaces that the registry @b must report and connect
+ * to in order for the process to complete its work successfully.
+ * @since v0.0.0.35
+ */
+static const uint8_t pRequiredInterfaces = 3;
 
 /**
  * @copydoc xdg_wm_base_listener::ping
