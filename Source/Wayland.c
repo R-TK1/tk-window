@@ -224,7 +224,7 @@ static int32_t pScale = 0;
 /**
  * @var uint32_t pWidth
  * @brief The width of the window in @b pixels. This value is recieved from the
- * display server and multiplied by @ref int32_t pScale to grab the actual pixel
+ * display server and multiplied by @ref pScale to grab the actual pixel
  * value.
  * @since v0.0.0.2
  */
@@ -233,7 +233,7 @@ static uint32_t pWidth = 0;
 /**
  * @var uint32_t pHeight
  * @brief The height of the window in @b pixels. This value is recieved from the
- * display server and multiplied by @ref int32_t pScale to grab the actual pixel
+ * display server and multiplied by @ref pScale to grab the actual pixel
  * value.
  * @since v0.0.0.2
  */
@@ -242,7 +242,7 @@ static uint32_t pHeight = 0;
 /**
  * @var uint8_t pFoundInterfaces
  * @brief A count of the interfaces we've found reported by the registry. This
- * must match @ref uint8_t pRequiredInterfaces, or the process will throw a
+ * must match @ref pRequiredInterfaces, or the process will throw a
  * tantrum.
  * @since v0.0.0.35
  */
