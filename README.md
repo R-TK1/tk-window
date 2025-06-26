@@ -4,7 +4,7 @@
 
 ### WLWindow
 ![loc_badge](https://github.com/waterlily-team/window/blob/badges/loc.svg)
-![latest_release_badge](https://img.shields.io/github/v/release/waterlily-team/window?include_prereleases&label=Latest&color=blue)
+![latest_release_badge](https://img.shields.io/github/v/release/waterlily-team/window?include_prereleases&label=Latest%20Version&color=blue)
 
 A tiny, very specialized windowing wrapper written in [C23](https://en.wikipedia.org/wiki/C23_(C_standard_revision)). It's built to be performant and simple, supporting as many [windowing backends](https://en.wikipedia.org/wiki/Windowing_system) as possible. 
 
