@@ -8,7 +8,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("Hyacinth" LANGUAGES C VERSION 0.0.0.42)
+project("Hyacinth" LANGUAGES C VERSION 0.0.0.43)
 
 include(Helpers)
 run_checks(ON)
@@ -17,5 +17,5 @@ create_target(OFF RAW_SOURCES "${WATERLILY_UNDERLYING_SYSTEM}")
 target_compile_definitions(${PROJECT_NAME} PRIVATE ${WATERLILY_UNDERLYING_SYSTEM_UC})
 link_external(${WATERLILY_UNDERLYING_SYSTEM})
 
-add_dependencies(${PROJECT_NAME} WLLogging)
-target_include_directories(${PROJECT_NAME} PRIVATE "$<TARGET_PROPERTY:WLLogging,INTERFACE_INCLUDE_DIRECTORIES>")
+add_dependencies(${PROJECT_NAME} Primrose)
+target_include_directories(${PROJECT_NAME} PRIVATE "$<TARGET_PROPERTY:Primrose,INTERFACE_INCLUDE_DIRECTORIES>")

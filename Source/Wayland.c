@@ -22,7 +22,7 @@
  * your copy of the source code, or https://www.gnu.org/licenses/gpl-3.0.txt.
  */
 
-#include <WLLogging.h>
+#include <Primrose.h>
 #include <stdint.h>
 #include <string.h>
 #include <wayland-client.h>
@@ -316,7 +316,7 @@ static void configure(void *, struct xdg_surface *t, uint32_t s)
                                  wl_proxy_get_version((struct wl_proxy *)t), 0,
                                  s);
     wl_surface_commit(pSurface);
-    waterlily_log(VERBOSE_OK, "Configure request completed.");
+    primrose_log(VERBOSE_OK, "Configure request completed.");
 }
 
 /**
@@ -364,12 +364,12 @@ pShellSurfaceListener = {&configure};
 static void topConfigure(void *, struct xdg_toplevel *, int32_t w, int32_t h,
                          struct wl_array *s)
 {
-    waterlily_log(VERBOSE_BEGIN, "Configure request recieved.");
+    primrose_log(VERBOSE_BEGIN, "Configure request recieved.");
 
     pWidth = (uint32_t)(w * pScale);
     pHeight = (uint32_t)(h * pScale);
-    waterlily_log(VERBOSE, "Window dimensions adjusted: %dx%d.", pWidth,
-                  pHeight);
+    primrose_log(VERBOSE, "Window dimensions adjusted: %dx%d.", pWidth,
+                 pHeight);
 
     int32_t *i;
     wl_array_for_each(i, s)
@@ -377,14 +377,14 @@ static void topConfigure(void *, struct xdg_toplevel *, int32_t w, int32_t h,
         switch (*i)
         {
             case 2:
-                waterlily_log(VERBOSE, "The window is now fullscreened.");
+                primrose_log(VERBOSE, "The window is now fullscreened.");
                 break;
             case 4:
-                waterlily_log(VERBOSE, "The window is now activated.");
+                primrose_log(VERBOSE, "The window is now activated.");
                 break;
-            case 9: waterlily_log(NOTE, "The window is now suspended."); break;
+            case 9: primrose_log(NOTE, "The window is now suspended."); break;
             default:
-                waterlily_log(WARNING, "Got unknown state value '%d'.", *i);
+                primrose_log(WARNING, "Got unknown state value '%d'.", *i);
                 break;
         }
     }
@@ -395,7 +395,7 @@ static void topConfigure(void *, struct xdg_toplevel *, int32_t w, int32_t h,
  */
 static void close(void *, struct xdg_toplevel *)
 {
-    waterlily_log(NOTE, "Closing window.");
+    primrose_log(NOTE, "Closing window.");
     pClose = true;
 }
 
@@ -412,11 +412,11 @@ static void capabilities(void *, struct xdg_toplevel *, struct wl_array *c)
     int32_t *i;
     wl_array_for_each(i, c) if (*i == 3)
     {
-        waterlily_log(VERBOSE_OK, "Found fullscreen support.");
+        primrose_log(VERBOSE_OK, "Found fullscreen support.");
         return;
     }
 
-    waterlily_log(ERROR, "No fullscreen support available.");
+    primrose_log(ERROR, "No fullscreen support available.");
 }
 
 /**
@@ -550,7 +550,7 @@ static void finish(void *, struct wl_output *) {}
 static void scale(void *, struct wl_output *, int32_t s)
 {
     pScale = s;
-    waterlily_log(VERBOSE, "Monitor scale %d.", pScale);
+    primrose_log(VERBOSE, "Monitor scale %d.", pScale);
 }
 
 /**
@@ -586,7 +586,7 @@ static void global(void *, struct wl_registry *registry, uint32_t name,
         pCompositor =
             wl_registry_bind(registry, name, &wl_compositor_interface, version);
         pFoundInterfaces++;
-        waterlily_log(VERBOSE_OK, "Connected to compositor v%d.", version);
+        primrose_log(VERBOSE_OK, "Connected to compositor v%d.", version);
         return;
     }
     else if (strcmp(interface, "xdg_wm_base") == 0)
@@ -596,7 +596,7 @@ static void global(void *, struct wl_registry *registry, uint32_t name,
         (void)wl_proxy_add_listener((struct wl_proxy *)pShell,
                                     (void (**)(void))&pShellListener, nullptr);
         pFoundInterfaces++;
-        waterlily_log(VERBOSE_OK, "Connected to window manager v%d.", version);
+        primrose_log(VERBOSE_OK, "Connected to window manager v%d.", version);
         return;
     }
     else if (strcmp(interface, wl_output_interface.name) == 0)
@@ -605,11 +605,11 @@ static void global(void *, struct wl_registry *registry, uint32_t name,
             wl_registry_bind(registry, name, &wl_output_interface, version);
         (void)wl_output_add_listener(pOutput, &pOutputListener, nullptr);
         pFoundInterfaces++;
-        waterlily_log(VERBOSE_OK, "Connected to output device v%d.", version);
+        primrose_log(VERBOSE_OK, "Connected to output device v%d.", version);
         return;
     }
 
-    waterlily_log(VERBOSE, "Found unknown interface '%s'.", interface);
+    primrose_log(VERBOSE, "Found unknown interface '%s'.", interface);
 }
 
 /**
@@ -632,7 +632,7 @@ bool hyacinth_create(const char *title)
     pDisplay = wl_display_connect(nullptr);
     if (__builtin_expect(pDisplay == nullptr, false))
     {
-        waterlily_log(ERROR, "Failed to connect to display server.");
+        primrose_log(ERROR, "Failed to connect to display server.");
         return false;
     }
 
@@ -641,7 +641,7 @@ bool hyacinth_create(const char *title)
     (void)wl_display_roundtrip(pDisplay);
     if (__builtin_expect(pFoundInterfaces != pRequiredInterfaces, false))
     {
-        waterlily_log(ERROR, "Could not find the required interfaces.");
+        primrose_log(ERROR, "Could not find the required interfaces.");
         return false;
     }
 
