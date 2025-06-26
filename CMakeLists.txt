@@ -1,6 +1,6 @@
 ################################################################################
-## The configuration files for the WLWindow project. This requires CMake 
-## version 3.10 or higher.
+## The configuration files for the Hyacinth project. This requires CMake version 
+## 3.10 or higher.
 ##
 ## Copyright (c) 2025 - the Waterlily Team
 ## This source code is under the GPLv3. For information on what that entails,
@@ -8,7 +8,7 @@
 ################################################################################
 
 cmake_minimum_required(VERSION 3.10 FATAL_ERROR)
-project("WLWindow" LANGUAGES C VERSION 0.0.0.41)
+project("Hyacinth" LANGUAGES C VERSION 0.0.0.42)
 
 include(Helpers)
 run_checks(ON)

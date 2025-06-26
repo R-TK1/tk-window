@@ -1,7 +1,7 @@
 /**
  * @file Wayland.c
  * @authors Israfil Argos
- * @brief This file provides the complete Wayland implementation of the TKWindow
+ * @brief This file provides the complete Wayland implementation of the Hyacinth
  * interface. This only depends upon the default C-standard @c stdint.h, and @c
  * string.h files, and the Wayland client header @c wayland-client.h.
  * @since v0.0.0.2
@@ -627,7 +627,7 @@ static void globalRemove(void *, struct wl_registry *, uint32_t) {}
 static const struct wl_registry_listener pRegistryListener = {&global,
                                                               &globalRemove};
 
-bool waterlily_windowCreate(const char *title)
+bool hyacinth_create(const char *title)
 {
     pDisplay = wl_display_connect(nullptr);
     if (__builtin_expect(pDisplay == nullptr, false))
@@ -678,7 +678,7 @@ bool waterlily_windowCreate(const char *title)
     return true;
 }
 
-void waterlily_windowDestroy(void)
+void hyacinth_destroy(void)
 {
     // xdg_toplevel_destroy
     (void)wl_proxy_marshal_flags(
@@ -703,18 +703,18 @@ void waterlily_windowDestroy(void)
     wl_display_disconnect(pDisplay);
 }
 
-bool waterlily_windowProcess(void)
+bool hyacinth_process(void)
 {
     return wl_display_dispatch(pDisplay) != -1 && !pClose;
 }
 
-void waterlily_windowGetSize(uint32_t *width, uint32_t *height)
+void hyacinth_getSize(uint32_t *width, uint32_t *height)
 {
     *width = pWidth;
     *height = pHeight;
 }
 
-void waterlily_windowGetData(void **data)
+void hyacinth_getData(void **data)
 {
     data[0] = pDisplay;
     data[1] = pSurface;
