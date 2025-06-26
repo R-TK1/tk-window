@@ -16,6 +16,11 @@
 
 #include <stdint.h>
 
+#define HYACINTH_MAJOR_VERSION 0
+#define HYACINTH_MINOR_VERSION 0
+#define HYACINTH_PATCH_VERSION 0
+#define HYACINTH_TWEAK_VERSION 44
+
 /**
  * @fn bool hyacinth_create(void)
  * @brief Create the main window object of the engine. This should only be
