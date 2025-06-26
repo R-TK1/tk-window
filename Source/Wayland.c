@@ -379,6 +379,9 @@ static void topConfigure(void *, struct xdg_toplevel *, int32_t w, int32_t h,
             case 2:
                 waterlily_log(VERBOSE, "The window is now fullscreened.");
                 break;
+            case 4:
+                waterlily_log(VERBOSE, "The window is now activated.");
+                break;
             case 9: waterlily_log(NOTE, "The window is now suspended."); break;
             default:
                 waterlily_log(WARNING, "Got unknown state value '%d'.", *i);
@@ -392,7 +395,7 @@ static void topConfigure(void *, struct xdg_toplevel *, int32_t w, int32_t h,
  */
 static void close(void *, struct xdg_toplevel *)
 {
-    waterlily_log(LOG, "Closing window.");
+    waterlily_log(NOTE, "Closing window.");
     pClose = true;
 }
 
@@ -702,7 +705,7 @@ void waterlily_windowDestroy(void)
 
 bool waterlily_windowProcess(void)
 {
-    return wl_display_dispatch(pDisplay) != -1;
+    return wl_display_dispatch(pDisplay) != -1 && !pClose;
 }
 
 void waterlily_windowGetSize(uint32_t *width, uint32_t *height)
